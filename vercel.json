@@ -1,19 +1,18 @@
 {
-  "version": 2,
   "buildCommand": "npm run build",
   "functions": {
     "api/index.ts": {
-      "includeFiles": "dist/client/**"
+      "includeFiles": ["dist/client/**", "dist/server/**"]
     }
   },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/assets/(.*)",
-      "dest": "/api/index.ts"
+      "source": "/assets/:path*",
+      "destination": "/api"
     },
     {
-      "src": "/(.*)",
-      "dest": "/api/index.ts"
+      "source": "/:path*",
+      "destination": "/api"
     }
   ]
 }

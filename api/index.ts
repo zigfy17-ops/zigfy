@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { readFile } from "node:fs/promises";
-import { extname, join, normalize } from "node:path";
+import { fileURLToPath } from "node:url";
+import { dirname, extname, join, normalize } from "node:path";
 import app from "../dist/server/index.js";
 
 const MIME_TYPES: Record<string, string> = {
@@ -36,17 +37,35 @@ function sendNodeResponse(response: ServerResponse, status: number, contentType:
   response.end(body);
 }
 
+const moduleDir = dirname(fileURLToPath(import.meta.url));
+const assetRootCandidates = [
+  join(process.cwd(), "dist", "client"),
+  join(moduleDir, "..", "dist", "client"),
+  join(moduleDir, "..", "..", "dist", "client"),
+  join(moduleDir, "dist", "client"),
+];
+
 async function serveBuiltAsset(pathname: string, response: ServerResponse) {
   const safePath = normalize(pathname).replace(/^([\\/])+/, "");
-  const filePath = join(process.cwd(), "dist", "client", safePath);
-  const data = await readFile(filePath);
-  const ext = extname(filePath).toLowerCase();
-  const contentType = MIME_TYPES[ext] ?? "application/octet-stream";
 
-  response.statusCode = 200;
-  response.setHeader("content-type", contentType);
-  response.setHeader("cache-control", "public, max-age=31536000, immutable");
-  response.end(data);
+  for (const root of assetRootCandidates) {
+    const filePath = join(root, safePath);
+    try {
+      const data = await readFile(filePath);
+      const ext = extname(filePath).toLowerCase();
+      const contentType = MIME_TYPES[ext] ?? "application/octet-stream";
+
+      response.statusCode = 200;
+      response.setHeader("content-type", contentType);
+      response.setHeader("cache-control", "public, max-age=31536000, immutable");
+      response.end(data);
+      return;
+    } catch {
+      // Try the next candidate path.
+    }
+  }
+
+  throw new Error("Asset not found");
 }
 
 export default async function handler(request: IncomingMessage, response: ServerResponse) {
