@@ -2,17 +2,17 @@
   "buildCommand": "npm run build",
   "functions": {
     "api/index.ts": {
-      "includeFiles": "dist/client/**"
+      "includeFiles": "dist/**"
     }
   },
   "rewrites": [
     {
       "source": "/assets/:path*",
-      "destination": "/api"
+      "destination": "/api/index"
     },
     {
       "source": "/:path*",
-      "destination": "/api"
+      "destination": "/api/index"
     }
   ]
 }
