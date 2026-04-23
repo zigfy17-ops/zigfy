@@ -179,13 +179,9 @@ function TrainerProfilePage() {
             <Card className="mt-8 p-6 border-2 border-foreground/10">
               <div className="flex items-center gap-2">
                 <h2 className="font-display text-xl font-bold tracking-tight">Current details</h2>
-                {profile?.is_approved ? (
-                  <Badge variant="outline" className="bg-accent border-foreground">
-                    Approved
-                  </Badge>
-                ) : (
-                  <Badge variant="outline">Pending approval</Badge>
-                )}
+                <Badge variant="outline" className="bg-accent border-foreground">
+                  Active
+                </Badge>
               </div>
               <div className="mt-5 space-y-4 text-sm">
                 <div>

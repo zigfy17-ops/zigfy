@@ -39,8 +39,7 @@ function TrainersPage() {
     (async () => {
       const { data: ts } = await supabase
         .from("trainers")
-        .select("id, user_id, bio, expertise, years_experience")
-        .eq("is_approved", true);
+        .select("id, user_id, bio, expertise, years_experience");
       const ids = (ts ?? []).map((t) => t.user_id);
       const { data: profs } = ids.length
         ? await supabase.from("profiles").select("id, full_name, avatar_url").in("id", ids)
@@ -95,7 +94,7 @@ function TrainersPage() {
             <p className="mt-12 font-mono text-sm text-muted-foreground">Loading…</p>
           ) : trainers.length === 0 ? (
             <Card className="mt-12 p-12 border-2 border-dashed border-foreground/15 text-center">
-              <p className="text-muted-foreground">No approved trainers yet. Check back soon!</p>
+              <p className="text-muted-foreground">No trainers yet. Check back soon!</p>
             </Card>
           ) : (
             <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
